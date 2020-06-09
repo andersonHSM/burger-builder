@@ -13,13 +13,25 @@ const Burger = (props: BurgerProps) => {
   //   ));
   // });
 
-  const transformedIngredients = Object.entries(props.ingredients).map(([ig, qtd]) => {
-    return Array(qtd)
-      .fill(null)
-      .map((_, index) => {
-        return <BurgerIngredient key={ig + index} type={ig as IngredientsTypes} />;
-      });
-  });
+  let transformedIngredients: JSX.Element | JSX.Element[] = Object.entries(props.ingredients)
+    .map(([ingredient, qtd]) => {
+      return Array(qtd)
+        .fill(ingredient)
+        .map((_, index) => {
+          return (
+            <BurgerIngredient key={ingredient + index} type={ingredient as IngredientsTypes} />
+          );
+        });
+    })
+    .flat();
+  /* .reduce((arr, el) => {
+      console.log({ arr, el });
+      return [...arr, ...el];
+    }, []) */
+
+  if (transformedIngredients.length === 0) {
+    transformedIngredients = <p>Please, start adding ingredients!</p>;
+  }
 
   return (
     <div className={styles['Burger']}>
