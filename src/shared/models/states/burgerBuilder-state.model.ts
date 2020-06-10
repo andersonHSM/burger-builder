@@ -4,7 +4,7 @@ export default interface BurgerBuildState {
     cheese: number;
     meat: number;
     bacon: number;
-    [key: string]: number;
+    [key: string]: number | boolean;
   };
   total: number;
 }

@@ -8,7 +8,11 @@ const BuildControl = (props: BuildControlProps) => {
   return (
     <div className={styles['BuildControl']}>
       <div className={styles['Label']}>{props.label}</div>
-      <button onClick={props.onLessClick} className={styles['Less']}>
+      <button
+        disabled={props.disableControl}
+        onClick={props.onLessClick}
+        className={styles['Less']}
+      >
         Less
       </button>
       <button onClick={props.onMoreClick} className={styles['More']}>

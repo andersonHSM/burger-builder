@@ -28,6 +28,7 @@ const BuildControls = (props: BuildControlsProps) => {
   const transformedControls = controls.map((controlInfo: ControlInterface, index) => {
     return (
       <BuildControl
+        disableControl={props.disabled[controlInfo.type]}
         onLessClick={() => props.onRemove(controlInfo.type)}
         onMoreClick={() => props.onAdd(controlInfo.type)}
         key={controlInfo.type + index}

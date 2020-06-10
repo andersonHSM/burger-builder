@@ -24,10 +24,10 @@ const Burger = (props: BurgerProps) => {
         });
     })
     .flat();
-  /* .reduce((arr, el) => {
-      console.log({ arr, el });
-      return [...arr, ...el];
-    }, []) */
+  // .reduce((arr, el) => {
+  //   console.log({ arr, el });
+  //   return [...arr, ...el];
+  // }, []);
 
   if (transformedIngredients.length === 0) {
     transformedIngredients = <p>Please, start adding ingredients!</p>;

@@ -16,15 +16,20 @@ const INGREDIENTS_COSTS: { [key: string]: number } = {
 };
 
 class BurgerBuilder extends Component {
-  state: BurgerBuildState = {
-    ingredients: {
-      salad: 0,
-      bacon: 0,
-      cheese: 0,
-      meat: 0,
-    },
-    total: 4,
-  };
+  state: BurgerBuildState;
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      ingredients: {
+        salad: 0,
+        bacon: 0,
+        cheese: 0,
+        meat: 0,
+      },
+      total: 4,
+    };
+  }
 
   addIngredientHandler = (type: IngredientsTypes) => {
     const clonedState = clone(this.state);
@@ -34,16 +39,42 @@ class BurgerBuilder extends Component {
 
     clonedState.total += INGREDIENTS_COSTS[type];
 
-    this.setState({ ...clonedState }, () => console.log(this.state));
+    this.setState({ ...clonedState });
   };
 
-  removeIngredientHandler = (type: IngredientsTypes) => {};
+  removeIngredientHandler = (type: IngredientsTypes) => {
+    if (this.state.ingredients[type] > 0) {
+      const clonedState = clone(this.state);
+
+      const ingredientCountUpdated = clonedState.ingredients[type] - 1;
+      clonedState.ingredients[type] = ingredientCountUpdated;
+      clonedState['total'] -= INGREDIENTS_COSTS[type];
+
+      this.setState({ ...clonedState });
+    }
+  };
 
   render() {
+    const { ingredients } = this.state;
+    const disabledInfo: { [key in keyof BurgerBuildState['ingredients']]: boolean } = {
+      salad: true,
+      bacon: true,
+      cheese: true,
+      meat: true,
+    };
+
+    for (let key in ingredients) {
+      disabledInfo[key] = ingredients[key] <= 0;
+    }
+
     return (
       <Aux>
         <Burger ingredients={this.state.ingredients} />
-        <BuildControls onAdd={this.addIngredientHandler} onRemove={this.removeIngredientHandler} />
+        <BuildControls
+          onAdd={this.addIngredientHandler}
+          onRemove={this.removeIngredientHandler}
+          disabled={disabledInfo}
+        />
       </Aux>
     );
   }
