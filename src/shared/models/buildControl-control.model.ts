@@ -1,4 +1,6 @@
+import { IngredientsTypes } from './props/ingredients-props.model';
+
 export default interface BuildControl {
-  type: string;
+  type: IngredientsTypes;
   label: string;
 }

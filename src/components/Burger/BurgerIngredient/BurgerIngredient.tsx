@@ -1,7 +1,7 @@
 import React from 'react';
 
 import styles from './BurgerIngredient.module.css';
-import { IngredientsProps } from 'shared/models/ingredients-props.model';
+import { IngredientsProps } from 'shared/models/props/ingredients-props.model';
 
 const BurgerIngredient = (props: IngredientsProps) => {
   let ingredient = null;

@@ -3,6 +3,7 @@ import React from 'react';
 import styles from './BuildControls.module.css';
 import BuildControl from './BuildControl/BuildControl';
 import ControlInterface from 'shared/models/buildControl-control.model';
+import BuildControlsProps from 'shared/models/props/buildControls-props.model';
 
 const controls: ControlInterface[] = [
   {
@@ -23,9 +24,16 @@ const controls: ControlInterface[] = [
   },
 ];
 
-const BuildControls = (props: any) => {
+const BuildControls = (props: BuildControlsProps) => {
   const transformedControls = controls.map((controlInfo: ControlInterface, index) => {
-    return <BuildControl key={controlInfo.type + index} label={controlInfo.label} />;
+    return (
+      <BuildControl
+        onLessClick={() => props.onRemove(controlInfo.type)}
+        onMoreClick={() => props.onAdd(controlInfo.type)}
+        key={controlInfo.type + index}
+        label={controlInfo.label}
+      />
+    );
   });
   return <div className={styles['BuildControls']}>{transformedControls}</div>;
 };
