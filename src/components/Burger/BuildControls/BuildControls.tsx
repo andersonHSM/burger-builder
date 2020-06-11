@@ -28,7 +28,7 @@ const BuildControls = (props: BuildControlsProps) => {
   const transformedControls = controls.map((controlInfo: ControlInterface, index) => {
     return (
       <BuildControl
-        disableControl={props.disabled[controlInfo.type]}
+        disableControl={props.disabled[controlInfo.type] as boolean}
         onLessClick={() => props.onRemove(controlInfo.type)}
         onMoreClick={() => props.onAdd(controlInfo.type)}
         key={controlInfo.type + index}
@@ -36,7 +36,27 @@ const BuildControls = (props: BuildControlsProps) => {
       />
     );
   });
-  return <div className={styles['BuildControls']}>{transformedControls}</div>;
+  return (
+    <div className={styles['BuildControls']}>
+      <p>
+        Current Price:{' '}
+        <strong>
+          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+            props.price
+          )}
+        </strong>
+      </p>
+      {transformedControls}
+
+      <button
+        onClick={props.onOrderClick}
+        disabled={!props.purchasable}
+        className={styles['OrderButton']}
+      >
+        Order Now
+      </button>
+    </div>
+  );
 };
 
 export default BuildControls;

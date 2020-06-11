@@ -7,6 +7,8 @@ import BuildControls from 'components/Burger/BuildControls/BuildControls';
 
 import BurgerBuildState from 'shared/models/states/burgerBuilder-state.model';
 import { IngredientsTypes } from 'shared/models/props/ingredients-props.model';
+import Modal from 'components/UI/Modal/Modal';
+import OrderSummary from 'components/Burger/OrderSummary/OrderSummary';
 
 const INGREDIENTS_COSTS: { [key: string]: number } = {
   salad: 0.5,
@@ -28,8 +30,19 @@ class BurgerBuilder extends Component {
         meat: 0,
       },
       total: 4,
+      purchasable: false,
+      purchasing: false,
     };
   }
+
+  checkIfPurchasable = () => {
+    const ingredients = clone(this.state.ingredients);
+
+    const ingredientsSum = Object.values(ingredients).reduce((count, value) => count + value, 0);
+    ingredientsSum > 0
+      ? this.setState({ purchasable: true })
+      : this.setState({ purchasable: false });
+  };
 
   addIngredientHandler = (type: IngredientsTypes) => {
     const clonedState = clone(this.state);
@@ -39,7 +52,9 @@ class BurgerBuilder extends Component {
 
     clonedState.total += INGREDIENTS_COSTS[type];
 
-    this.setState({ ...clonedState });
+    this.setState({ ...clonedState }, () => {
+      this.checkIfPurchasable();
+    });
   };
 
   removeIngredientHandler = (type: IngredientsTypes) => {
@@ -50,17 +65,24 @@ class BurgerBuilder extends Component {
       clonedState.ingredients[type] = ingredientCountUpdated;
       clonedState['total'] -= INGREDIENTS_COSTS[type];
 
-      this.setState({ ...clonedState });
+      this.setState({ ...clonedState }, () => {
+        this.checkIfPurchasable();
+      });
     }
+  };
+
+  handleCanceling = () => {
+    this.setState({ purchasing: false });
+  };
+
+  handleConfirm = () => {
+    window.alert('Confirmed');
   };
 
   render() {
     const { ingredients } = this.state;
-    const disabledInfo: { [key in keyof BurgerBuildState['ingredients']]: boolean } = {
-      salad: true,
-      bacon: true,
-      cheese: true,
-      meat: true,
+    const disabledInfo: { [key in keyof BurgerBuildState['ingredients']]: number | boolean } = {
+      ...ingredients,
     };
 
     for (let key in ingredients) {
@@ -69,11 +91,22 @@ class BurgerBuilder extends Component {
 
     return (
       <Aux>
+        <Modal closeModal={() => this.handleCanceling()} visible={this.state.purchasing}>
+          <OrderSummary
+            onCancel={this.handleCanceling}
+            onConfirm={this.handleConfirm}
+            ingredients={this.state.ingredients}
+            totalPrice={this.state.total}
+          />
+        </Modal>
         <Burger ingredients={this.state.ingredients} />
         <BuildControls
           onAdd={this.addIngredientHandler}
           onRemove={this.removeIngredientHandler}
+          onOrderClick={() => this.setState({ purchasing: true })}
           disabled={disabledInfo}
+          price={this.state.total}
+          purchasable={this.state.purchasable}
         />
       </Aux>
     );
