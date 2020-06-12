@@ -6,8 +6,6 @@ import ModalProps from 'shared/models/props/modal-props.model';
 
 class Modal extends Component<ModalProps> {
   shouldComponentUpdate(nextProps: ModalProps, nextState: any) {
-    console.log({ nextState, nextProps });
-
     return nextProps.visible !== this.props.visible;
   }
   render() {

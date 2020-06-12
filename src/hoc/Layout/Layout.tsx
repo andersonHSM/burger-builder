@@ -24,7 +24,6 @@ class Layout extends Component {
   };
 
   render() {
-    console.log('[Layout.tsx] render');
     return (
       <Aux>
         <Toolbar openDrawer={this.sideDrawerToggleHandler} />

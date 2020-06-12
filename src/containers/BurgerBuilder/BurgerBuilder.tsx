@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { clone } from 'ramda';
+import axios from 'axios-orders';
 
 import Aux from 'hoc/Aux/Aux';
 import Burger from 'components/Burger/Burger';
@@ -76,7 +77,25 @@ class BurgerBuilder extends Component {
   };
 
   handleConfirm = () => {
-    window.alert('Confirmed');
+    // window.alert('Confirmed');
+    const order = {
+      ingredients: this.state.ingredients,
+      price: this.state.total,
+      costumer: {
+        name: 'Anderson',
+        address: {
+          street: 'Tv Santa Isabel',
+          number: 667,
+          code: '49900-000',
+        },
+        email: 'anderson@mail.com',
+      },
+      deliveryMode: 'fastest',
+    };
+    axios
+      .post('/orders.json', order)
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
   };
 
   render() {
@@ -89,7 +108,6 @@ class BurgerBuilder extends Component {
       disabledInfo[key] = ingredients[key] <= 0;
     }
 
-    console.log('[BurgerBuilder.tsx] render');
     return (
       <Aux>
         <Modal closeModal={() => this.handleCanceling()} visible={this.state.purchasing}>
