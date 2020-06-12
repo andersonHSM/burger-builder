@@ -1,0 +1,22 @@
+.ToggleDrawerButton {
+  background-color: transparent;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  color: white;
+  text-align: center;
+  padding: 5px;
+  box-sizing: border-box;
+  transition: scale 0.1s ease-in-out;
+  line-height: 2rem;
+  font-size: 30px;
+}
+
+.ToggleDrawerButton:hover {
+  scale: 1.1;
+  /* font-size: 1.2rem; */
+}
+
+.ToggleDrawerButton span {
+  margin-left: 5px;
+}

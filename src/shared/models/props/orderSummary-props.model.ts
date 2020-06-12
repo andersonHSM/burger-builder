@@ -7,4 +7,5 @@ export default interface OrderSummaryProps {
     [key in IngredientsTypes]: number;
   };
   totalPrice: number;
+  showSummary: boolean;
 }

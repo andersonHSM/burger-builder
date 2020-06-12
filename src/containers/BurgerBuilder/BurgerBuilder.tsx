@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { clone } from 'ramda';
 
-import Aux from 'hoc/Aux';
+import Aux from 'hoc/Aux/Aux';
 import Burger from 'components/Burger/Burger';
 import BuildControls from 'components/Burger/BuildControls/BuildControls';
 
@@ -89,10 +89,12 @@ class BurgerBuilder extends Component {
       disabledInfo[key] = ingredients[key] <= 0;
     }
 
+    console.log('[BurgerBuilder.tsx] render');
     return (
       <Aux>
         <Modal closeModal={() => this.handleCanceling()} visible={this.state.purchasing}>
           <OrderSummary
+            showSummary={this.state.purchasing}
             onCancel={this.handleCanceling}
             onConfirm={this.handleConfirm}
             ingredients={this.state.ingredients}
