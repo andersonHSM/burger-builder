@@ -9,4 +9,6 @@ export default interface BurgerBuildState {
   total: number;
   purchasable: boolean;
   purchasing: boolean;
+  loading: boolean;
+  error: boolean;
 }
