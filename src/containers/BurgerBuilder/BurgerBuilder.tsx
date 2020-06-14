@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import { clone } from 'ramda';
 import axios from 'axios-orders';
 
@@ -20,7 +21,7 @@ const INGREDIENTS_COSTS: { [key: string]: number } = {
   bacon: 0.7,
 };
 
-class BurgerBuilder extends Component {
+class BurgerBuilder extends Component<RouteComponentProps> {
   state: BurgerBuildState;
   constructor(props: any) {
     super(props);
@@ -89,30 +90,40 @@ class BurgerBuilder extends Component {
 
   handleConfirm = () => {
     // window.alert('Confirmed');
-    this.setState({ loading: true });
-    const order = {
-      ingredients: this.state.ingredients,
-      price: this.state.total,
-      costumer: {
-        name: 'Anderson',
-        address: {
-          street: 'Tv Santa Isabel',
-          number: 667,
-          code: '49900-000',
-        },
-        email: 'anderson@mail.com',
-      },
-      deliveryMode: 'fastest',
-    };
+    // this.setState({ loading: true });
+    // const order = {
+    //   ingredients: this.state.ingredients,
+    //   price: this.state.total,
+    //   costumer: {
+    //     name: 'Anderson',
+    //     address: {
+    //       street: 'Tv Santa Isabel',
+    //       number: 667,
+    //       code: '49900-000',
+    //     },
+    //     email: 'anderson@mail.com',
+    //   },
+    //   deliveryMode: 'fastest',
+    // };
 
-    axios
-      .post('/orders.json', order)
-      .then((response) => {
-        this.setState({ loading: false, purchasing: false });
-      })
-      .catch((error) => {
-        this.setState({ loading: false, purchasing: false });
-      });
+    // axios
+    //   .post('/orders.json', order)
+    //   .then((response) => {
+    //     this.setState({ loading: false, purchasing: false });
+    //   })
+    //   .catch((error) => {
+    //     this.setState({ loading: false, purchasing: false });
+    //   });
+    let ingredientsQueryParams = Object.entries(this.state.ingredients).map(([ig, qtd]) => {
+      return encodeURIComponent(ig) + '=' + encodeURIComponent(qtd);
+    });
+
+    ingredientsQueryParams = ingredientsQueryParams.concat(`price=${this.state.total}`);
+
+    this.props.history.push({
+      pathname: '/checkout',
+      search: `?${ingredientsQueryParams.join('&')}`,
+    });
   };
 
   render() {
@@ -138,7 +149,13 @@ class BurgerBuilder extends Component {
         />
       );
 
-    let burger = this.state.error ? <p>Couldn't reach the server.</p> : <Spinner />;
+    let burger = this.state.error ? (
+      <p>Couldn't reach the server.</p>
+    ) : (
+      <div style={{ display: 'flex', justifyContent: 'center', margin: 'auto' }}>
+        <Spinner />/
+      </div>
+    );
 
     if (this.state.ingredients) {
       burger = (
