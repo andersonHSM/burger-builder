@@ -11,6 +11,7 @@ import Spinner from 'components/UI/Spinner/Spinner';
 import Input from 'components/UI/Input/Input';
 import { clone } from 'ramda';
 import BuiltinValidators from 'shared/forms/validators/builtInValidators';
+import FormGroup from 'containers/FormGroup/FormGroup';
 
 class ContactData extends Component<ContactDataProps & RouteComponentProps> {
   state: ContactDataState = {
@@ -125,20 +126,10 @@ class ContactData extends Component<ContactDataProps & RouteComponentProps> {
     return isValid;
   };
 
-  validateAllForm = (form: any) => {
-    if (typeof form !== 'object') return;
-    const arr = Object.keys(form).map((value) => value);
-    const result = arr.map((value) => form[value]);
-    console.log(result);
-    this.validateAllForm(form);
-  };
-
   structureForm = () => {
     const { address: addressState } = this.state.orderForm;
     const { deliveryMode: deliveryModeState } = this.state.orderForm;
     const { costumer: costumerState } = this.state.orderForm;
-
-    let isFormValid = true;
 
     const addressForm = Object.entries(addressState).map(([stateField, field], index) => {
       return (
@@ -150,9 +141,7 @@ class ContactData extends Component<ContactDataProps & RouteComponentProps> {
 
             const validField = this.validateFormFields(field.validators as any, value);
             clonedOrderForm.address[stateField].valid = validField;
-            isFormValid = addressState[stateField].valid && isFormValid;
 
-            clonedOrderForm.valid = isFormValid;
             this.setState({ orderForm: clonedOrderForm });
           }}
           valid={addressState[stateField].valid}
@@ -177,10 +166,6 @@ class ContactData extends Component<ContactDataProps & RouteComponentProps> {
 
             const validField = this.validateFormFields(field.validators as any, value);
             clonedOrderForm.costumer[stateField].valid = validField;
-
-            isFormValid = validField && isFormValid;
-
-            clonedOrderForm.valid = isFormValid;
 
             this.setState({ orderForm: clonedOrderForm });
           }}
@@ -208,14 +193,10 @@ class ContactData extends Component<ContactDataProps & RouteComponentProps> {
             clonedOrderForm.deliveryMode.validators as any,
             value
           );
-          isFormValid = validField && isFormValid;
 
-          clonedOrderForm.valid = isFormValid;
           clonedOrderForm.deliveryMode.valid = validField;
 
-          this.setState({ orderForm: clonedOrderForm }, () => {
-            this.validateAllForm(this.state.orderForm);
-          });
+          this.setState({ orderForm: clonedOrderForm });
         }}
         key={deliveryModeState.elType}
         inputType={deliveryModeState.elType}
@@ -229,11 +210,20 @@ class ContactData extends Component<ContactDataProps & RouteComponentProps> {
 
     return (
       <>
-        {costumerForm}
-        {addressForm}
-        {modeForm}
+        <FormGroup formChange={(val) => this.updateFormValidty(val)}>
+          {costumerForm}
+          {addressForm}
+          {modeForm}
+        </FormGroup>
       </>
     );
+  };
+
+  updateFormValidty = (value: boolean) => {
+    const clonedForm = clone(this.state.orderForm);
+
+    clonedForm.valid = value;
+    this.setState({ orderForm: clonedForm });
   };
 
   render() {

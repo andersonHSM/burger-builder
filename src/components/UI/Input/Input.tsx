@@ -21,7 +21,6 @@ class Input extends Component<{
   };
 
   handleFocus = () => {
-    console.log('oi');
     if (!this.state.touched) {
       this.setState({
         touched: true,
