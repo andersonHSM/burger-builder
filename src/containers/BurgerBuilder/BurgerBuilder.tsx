@@ -14,7 +14,7 @@ import Modal from 'components/UI/Modal/Modal';
 import OrderSummary from 'components/Burger/OrderSummary/OrderSummary';
 import Spinner from 'components/UI/Spinner/Spinner';
 import withErrorHandler from 'hoc/withErrorHandler.tsx/withErrorHandler';
-import { ADD_INGREDIENT } from 'store/actions/ingredients.actions';
+import { ADD_INGREDIENT, REMOVE_INGREDIENT } from 'store/actions/ingredients.actions';
 import BurgerBuilderMappedProps from 'shared/store/mapped-props/burgerBuilder.mapped-props';
 
 class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentProps> {
@@ -65,6 +65,7 @@ class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentP
   };
 
   removeIngredientHandler = (type: IngredientsTypes) => {
+    this.props.removeIngredient(type);
     // if (this.state.ingredients[type] > 0) {
     //   const clonedState = clone(this.state);
     //   const ingredientCountUpdated = clonedState.ingredients[type] - 1;
@@ -94,18 +95,6 @@ class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentP
   };
 
   render() {
-    const { ingredients } = this.props;
-
-    const disabledInfo: { [key: string]: number | boolean } = {
-      ...ingredients,
-    };
-    if (Object.keys(ingredients).length > 0) {
-      for (let key in ingredients) {
-        disabledInfo[key] = ingredients[key] <= 0;
-      }
-    } else {
-    }
-
     const summary =
       this.state.loading || !this.state.ingredients ? (
         <Spinner />
@@ -132,10 +121,10 @@ class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentP
         <>
           <Burger ingredients={this.props.ingredients as any} />
           <BuildControls
+            ingredients={this.props.ingredients}
             onAdd={this.addIngredientHandler}
             onRemove={this.removeIngredientHandler}
             onOrderClick={() => this.setState({ purchasing: true })}
-            disabled={disabledInfo}
             price={this.props.price}
             purchasable={this.state.purchasable}
           />
@@ -162,6 +151,7 @@ const mapDispatchToProps = (dispatch: any) => {
   return {
     addIngredient: (type: string, qtd: number) =>
       dispatch({ type: ADD_INGREDIENT, ingredient: { type, qtd } }),
+    removeIngredient: (type: string) => dispatch({ type: REMOVE_INGREDIENT, ingredient: { type } }),
   };
 };
 
