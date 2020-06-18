@@ -5,12 +5,17 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import { Provider } from 'react-redux';
+import store from './store/store';
+
 ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter>
+  //<React.StrictMode>
+  <BrowserRouter>
+    <Provider store={store}>
       <App />
-    </BrowserRouter>
-  </React.StrictMode>,
+    </Provider>
+  </BrowserRouter>,
+  //</React.StrictMode>,
   document.getElementById('root')
 );
 

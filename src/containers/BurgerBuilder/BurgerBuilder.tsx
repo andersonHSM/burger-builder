@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { clone } from 'ramda';
+import { connect } from 'react-redux';
 import axios from 'axios-orders';
 
 import Aux from 'hoc/Aux/Aux';
@@ -13,15 +14,10 @@ import Modal from 'components/UI/Modal/Modal';
 import OrderSummary from 'components/Burger/OrderSummary/OrderSummary';
 import Spinner from 'components/UI/Spinner/Spinner';
 import withErrorHandler from 'hoc/withErrorHandler.tsx/withErrorHandler';
+import { ADD_INGREDIENT } from 'store/actions/ingredients.actions';
+import BurgerBuilderMappedProps from 'shared/store/mapped-props/burgerBuilder.mapped-props';
 
-const INGREDIENTS_COSTS: { [key: string]: number } = {
-  salad: 0.5,
-  cheese: 0.4,
-  meat: 1.3,
-  bacon: 0.7,
-};
-
-class BurgerBuilder extends Component<RouteComponentProps> {
+class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentProps> {
   state: BurgerBuildState;
   constructor(props: any) {
     super(props);
@@ -49,7 +45,7 @@ class BurgerBuilder extends Component<RouteComponentProps> {
   }
 
   checkIfPurchasable = () => {
-    const ingredients = clone(this.state.ingredients);
+    const ingredients = clone(this.props.ingredients);
 
     const ingredientsSum = Object.values(ingredients).reduce((count, value) => count + value, 0);
     ingredientsSum > 0
@@ -58,30 +54,26 @@ class BurgerBuilder extends Component<RouteComponentProps> {
   };
 
   addIngredientHandler = (type: IngredientsTypes) => {
-    const clonedState = clone(this.state);
-
-    const ingredientCountUpdated = clonedState.ingredients[type] + 1;
-    clonedState.ingredients[type] = ingredientCountUpdated;
-
-    clonedState.total += INGREDIENTS_COSTS[type];
-
-    this.setState({ ...clonedState }, () => {
-      this.checkIfPurchasable();
-    });
+    this.props.addIngredient(type, 1);
+    // const clonedState = clone(this.state);
+    // const ingredientCountUpdated = clonedState.ingredients[type] + 1;
+    // clonedState.ingredients[type] = ingredientCountUpdated;
+    // clonedState.total += INGREDIENTS_COSTS[type];
+    // this.setState({ ...clonedState }, () => {
+    //   this.checkIfPurchasable();
+    // });
   };
 
   removeIngredientHandler = (type: IngredientsTypes) => {
-    if (this.state.ingredients[type] > 0) {
-      const clonedState = clone(this.state);
-
-      const ingredientCountUpdated = clonedState.ingredients[type] - 1;
-      clonedState.ingredients[type] = ingredientCountUpdated;
-      clonedState['total'] -= INGREDIENTS_COSTS[type];
-
-      this.setState({ ...clonedState }, () => {
-        this.checkIfPurchasable();
-      });
-    }
+    // if (this.state.ingredients[type] > 0) {
+    //   const clonedState = clone(this.state);
+    //   const ingredientCountUpdated = clonedState.ingredients[type] - 1;
+    //   clonedState.ingredients[type] = ingredientCountUpdated;
+    //   clonedState['total'] -= INGREDIENTS_COSTS[type];
+    //   this.setState({ ...clonedState }, () => {
+    //     this.checkIfPurchasable();
+    //   });
+    // }
   };
 
   handleCanceling = () => {
@@ -89,36 +81,11 @@ class BurgerBuilder extends Component<RouteComponentProps> {
   };
 
   handleConfirm = () => {
-    // window.alert('Confirmed');
-    // this.setState({ loading: true });
-    // const order = {
-    //   ingredients: this.state.ingredients,
-    //   price: this.state.total,
-    //   costumer: {
-    //     name: 'Anderson',
-    //     address: {
-    //       street: 'Tv Santa Isabel',
-    //       number: 667,
-    //       code: '49900-000',
-    //     },
-    //     email: 'anderson@mail.com',
-    //   },
-    //   deliveryMode: 'fastest',
-    // };
-
-    // axios
-    //   .post('/orders.json', order)
-    //   .then((response) => {
-    //     this.setState({ loading: false, purchasing: false });
-    //   })
-    //   .catch((error) => {
-    //     this.setState({ loading: false, purchasing: false });
-    //   });
     let ingredientsQueryParams = Object.entries(this.state.ingredients).map(([ig, qtd]) => {
       return encodeURIComponent(ig) + '=' + encodeURIComponent(qtd);
     });
 
-    ingredientsQueryParams = ingredientsQueryParams.concat(`price=${this.state.total}`);
+    ingredientsQueryParams = ingredientsQueryParams.concat(`price=${this.props.price}`);
 
     this.props.history.push({
       pathname: '/checkout',
@@ -127,13 +94,16 @@ class BurgerBuilder extends Component<RouteComponentProps> {
   };
 
   render() {
-    const { ingredients } = this.state;
-    const disabledInfo: { [key in keyof BurgerBuildState['ingredients']]: number | boolean } = {
+    const { ingredients } = this.props;
+
+    const disabledInfo: { [key: string]: number | boolean } = {
       ...ingredients,
     };
-
-    for (let key in ingredients) {
-      disabledInfo[key] = ingredients[key] <= 0;
+    if (Object.keys(ingredients).length > 0) {
+      for (let key in ingredients) {
+        disabledInfo[key] = ingredients[key] <= 0;
+      }
+    } else {
     }
 
     const summary =
@@ -157,16 +127,16 @@ class BurgerBuilder extends Component<RouteComponentProps> {
       </div>
     );
 
-    if (this.state.ingredients) {
+    if (this.props.ingredients) {
       burger = (
         <>
-          <Burger ingredients={this.state.ingredients} />
+          <Burger ingredients={this.props.ingredients as any} />
           <BuildControls
             onAdd={this.addIngredientHandler}
             onRemove={this.removeIngredientHandler}
             onOrderClick={() => this.setState({ purchasing: true })}
             disabled={disabledInfo}
-            price={this.state.total}
+            price={this.props.price}
             purchasable={this.state.purchasable}
           />
         </>
@@ -184,4 +154,15 @@ class BurgerBuilder extends Component<RouteComponentProps> {
   }
 }
 
-export default withErrorHandler(BurgerBuilder, axios);
+const mapStateToProps = (state: any) => {
+  return state;
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    addIngredient: (type: string, qtd: number) =>
+      dispatch({ type: ADD_INGREDIENT, ingredient: { type, qtd } }),
+  };
+};
+
+export default withErrorHandler(connect(mapStateToProps, mapDispatchToProps)(BurgerBuilder), axios);
