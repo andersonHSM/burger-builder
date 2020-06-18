@@ -44,6 +44,12 @@ class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentP
       });
   }
 
+  componentDidUpdate(prevProps: BurgerBuilderMappedProps) {
+    if (prevProps.ingredients !== this.props.ingredients) {
+      this.checkIfPurchasable();
+    }
+  }
+
   checkIfPurchasable = () => {
     const ingredients = clone(this.props.ingredients);
 
@@ -55,26 +61,10 @@ class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentP
 
   addIngredientHandler = (type: IngredientsTypes) => {
     this.props.addIngredient(type, 1);
-    // const clonedState = clone(this.state);
-    // const ingredientCountUpdated = clonedState.ingredients[type] + 1;
-    // clonedState.ingredients[type] = ingredientCountUpdated;
-    // clonedState.total += INGREDIENTS_COSTS[type];
-    // this.setState({ ...clonedState }, () => {
-    //   this.checkIfPurchasable();
-    // });
   };
 
   removeIngredientHandler = (type: IngredientsTypes) => {
     this.props.removeIngredient(type);
-    // if (this.state.ingredients[type] > 0) {
-    //   const clonedState = clone(this.state);
-    //   const ingredientCountUpdated = clonedState.ingredients[type] - 1;
-    //   clonedState.ingredients[type] = ingredientCountUpdated;
-    //   clonedState['total'] -= INGREDIENTS_COSTS[type];
-    //   this.setState({ ...clonedState }, () => {
-    //     this.checkIfPurchasable();
-    //   });
-    // }
   };
 
   handleCanceling = () => {
@@ -82,29 +72,22 @@ class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentP
   };
 
   handleConfirm = () => {
-    let ingredientsQueryParams = Object.entries(this.state.ingredients).map(([ig, qtd]) => {
-      return encodeURIComponent(ig) + '=' + encodeURIComponent(qtd);
-    });
-
-    ingredientsQueryParams = ingredientsQueryParams.concat(`price=${this.props.price}`);
-
     this.props.history.push({
       pathname: '/checkout',
-      search: `?${ingredientsQueryParams.join('&')}`,
     });
   };
 
   render() {
     const summary =
-      this.state.loading || !this.state.ingredients ? (
+      this.state.loading || !this.props.ingredients ? (
         <Spinner />
       ) : (
         <OrderSummary
           showSummary={this.state.purchasing}
           onCancel={this.handleCanceling}
           onConfirm={this.handleConfirm}
-          ingredients={this.state.ingredients}
-          totalPrice={this.state.total}
+          ingredients={this.props.ingredients}
+          totalPrice={this.props.price}
         />
       );
 

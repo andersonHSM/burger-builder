@@ -1,6 +1,7 @@
 import { ADD_INGREDIENT, REMOVE_INGREDIENT } from 'store/actions/ingredients.actions';
 import IngredientsActions from 'shared/store/ingredientsActions';
 import { clone } from 'ramda';
+import IngredientsReducer from 'shared/store/ingredientsReducer';
 
 const INGREDIENTS_COSTS: { [key: string]: number } = {
   salad: 0.5,
@@ -9,7 +10,7 @@ const INGREDIENTS_COSTS: { [key: string]: number } = {
   bacon: 0.7,
 };
 
-const initialIngredientsState = {
+const initialIngredientsState: IngredientsReducer = {
   ingredients: {},
   price: 4,
 };
