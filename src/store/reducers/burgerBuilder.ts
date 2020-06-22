@@ -1,4 +1,8 @@
-import { ADD_INGREDIENT, REMOVE_INGREDIENT } from 'store/actions/ingredients.actions';
+import {
+  ADD_INGREDIENT,
+  REMOVE_INGREDIENT,
+  ADD_INGREDIENTS_TO_STORE,
+} from 'store/actions/actionsTypes';
 import IngredientsActions from 'shared/store/ingredientsActions';
 import { clone } from 'ramda';
 import IngredientsReducer from 'shared/store/ingredientsReducer';
@@ -69,6 +73,14 @@ const ingredientsReducer = (state = initialIngredientsState, action: Ingredients
       newState.price = price(newState.price, action);
       return newState;
     }
+    case ADD_INGREDIENTS_TO_STORE: {
+      const newState = clone(state);
+
+      newState.ingredients = action.ingredients;
+
+      return newState;
+    }
+
     default:
       return state;
   }

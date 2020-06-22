@@ -14,8 +14,9 @@ import Modal from 'components/UI/Modal/Modal';
 import OrderSummary from 'components/Burger/OrderSummary/OrderSummary';
 import Spinner from 'components/UI/Spinner/Spinner';
 import withErrorHandler from 'hoc/withErrorHandler.tsx/withErrorHandler';
-import { ADD_INGREDIENT, REMOVE_INGREDIENT } from 'store/actions/ingredients.actions';
 import BurgerBuilderMappedProps from 'shared/store/mapped-props/burgerBuilder.mapped-props';
+import { addIngredient, removeIngredient, initIngredients } from 'store/actions';
+import { AxiosInstance } from 'axios';
 
 class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentProps> {
   state: BurgerBuildState;
@@ -34,14 +35,15 @@ class BurgerBuilder extends Component<BurgerBuilderMappedProps & RouteComponentP
 
   componentDidMount() {
     type Ingredients = BurgerBuildState['ingredients'];
-    axios
-      .get<Ingredients>('/ingredients.json')
-      .then((response) => {
-        this.setState({ ingredients: response.data });
-      })
-      .catch(() => {
-        this.setState({ error: true });
-      });
+    this.props.initIngredients(axios);
+    // axios
+    //   .get<Ingredients>('/ingredients.json')
+    //   .then((response) => {
+    //     this.setState({ ingredients: response.data });
+    //   })
+    //   .catch(() => {
+    //     this.setState({ error: true });
+    //   });
   }
 
   componentDidUpdate(prevProps: BurgerBuilderMappedProps) {
@@ -132,9 +134,9 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    addIngredient: (type: string, qtd: number) =>
-      dispatch({ type: ADD_INGREDIENT, ingredient: { type, qtd } }),
-    removeIngredient: (type: string) => dispatch({ type: REMOVE_INGREDIENT, ingredient: { type } }),
+    addIngredient: (type: string, qtd: number) => dispatch(addIngredient(type, qtd)),
+    removeIngredient: (type: string) => dispatch(removeIngredient(type)),
+    initIngredients: (axios: AxiosInstance) => dispatch(initIngredients(axios)),
   };
 };
 
